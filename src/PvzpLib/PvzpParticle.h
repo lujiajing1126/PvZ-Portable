@@ -296,6 +296,10 @@ public:
 	float							mSpinVelocity;
 	ParticleID						mCrossFadeParticleID;
 	int32_t							mCrossFadeDuration;
+	unsigned int					mShakeSeed = 0;
+	int								mShakeRandomX = 0;
+	int								mShakeRandomY = 0;
+	bool							mShakeCacheValid = false;
 	float							mParticleInterp[ParticleTracks::NUM_PARTICLE_TRACKS];
 	float							mParticleFieldInterp[MAX_PARTICLE_FIELDS][2];
 };

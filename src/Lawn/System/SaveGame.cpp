@@ -1263,6 +1263,8 @@ static void SyncParticlePortable(PvzpParticle* theParticle, PortableSaveContext&
 		for (int j = 0; j < 2; j++)
 			theContext.SyncFloat(theParticle->mParticleFieldInterp[i][j]);
 	}
+	if (theContext.mReading)
+		theParticle->mShakeCacheValid = false;
 }
 
 static void SyncParticleEmitterPortable(PvzpParticleSystem* theParticleSystem, PvzpParticleEmitter* theParticleEmitter, PortableSaveContext& theContext)

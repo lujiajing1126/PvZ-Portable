@@ -539,13 +539,33 @@ void PvzpParticleEmitter::UpdateParticleField(PvzpParticle* theParticle, Particl
 		int aLastRandSeed = theParticle->mParticleAge - 1;
 		if (aLastRandSeed == -1)
 			aLastRandSeed = theParticle->mParticleDuration - 1;
-		srand(aLastRandSeed * reinterpret_cast<uintptr_t>(theParticle));
-		theParticle->mPosition.x -= aLastX * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
-		theParticle->mPosition.y -= aLastY * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		const unsigned int aLastSeed = static_cast<unsigned int>(aLastRandSeed * reinterpret_cast<uintptr_t>(theParticle));
+		int aLastRandomX;
+		int aLastRandomY;
+		if (theParticle->mShakeCacheValid && theParticle->mShakeSeed == aLastSeed)
+		{
+			aLastRandomX = theParticle->mShakeRandomX;
+			aLastRandomY = theParticle->mShakeRandomY;
+		}
+		else
+		{
+			srand(aLastSeed);
+			aLastRandomX = rand();
+			aLastRandomY = rand();
+		}
+		theParticle->mPosition.x -= aLastX * (static_cast<float>(aLastRandomX) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mPosition.y -= aLastY * (static_cast<float>(aLastRandomY) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
 		// apply this frame's random shake offset
-		srand(theParticle->mParticleAge * reinterpret_cast<uintptr_t>(theParticle));
-		theParticle->mPosition.x += x * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
-		theParticle->mPosition.y += y * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		const unsigned int aCurrentSeed = static_cast<unsigned int>(theParticle->mParticleAge * reinterpret_cast<uintptr_t>(theParticle));
+		srand(aCurrentSeed);
+		const int aCurrentRandomX = rand();
+		const int aCurrentRandomY = rand();
+		theParticle->mPosition.x += x * (static_cast<float>(aCurrentRandomX) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mPosition.y += y * (static_cast<float>(aCurrentRandomY) / static_cast<float>(RAND_MAX) * 2.0f - 1.0f);
+		theParticle->mShakeSeed = aCurrentSeed;
+		theParticle->mShakeRandomX = aCurrentRandomX;
+		theParticle->mShakeRandomY = aCurrentRandomY;
+		theParticle->mShakeCacheValid = true;
 		break;
 	}
 	case ParticleFieldType::FIELD_CIRCLE:
