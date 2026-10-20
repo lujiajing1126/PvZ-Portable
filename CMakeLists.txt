@@ -110,6 +110,14 @@ int main() {
 	list(APPEND PLAT_INCLUDES
 		${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/default
 	)
+	if(OHOS)
+		list(APPEND SOURCES
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/ohos/OhosBridge.cpp
+		)
+		list(APPEND PLAT_INCLUDES
+			${CMAKE_CURRENT_SOURCE_DIR}/src/SexyAppFramework/platform/ohos
+		)
+	endif()
 endif()
 
 if(CMAKE_BUILD_TYPE AND CMAKE_BUILD_TYPE MATCHES "^[Dd][Ee][Bb][Uu][Gg]$")
@@ -176,8 +184,9 @@ if(BUILD_STATIC AND TARGET SDL2::SDL2-static)
 	_pvz_patch_sdl2_iface_libs(SDL2_mixer_ext_Static)
 endif()
 
-# Android requires a shared library loaded by SDLActivity; other platforms use an executable.
-if(ANDROID)
+# Android requires a shared library loaded by SDLActivity, and HarmonyOS one loaded by SDL3's
+# NAPI module (both look for libmain.so); other platforms use an executable.
+if(ANDROID OR OHOS)
 	add_library(pvz-portable SHARED ${SOURCES})
 elseif(IOS)
 	add_executable(pvz-portable MACOSX_BUNDLE ${SOURCES})
@@ -281,6 +290,12 @@ elseif (NINTENDO_SWITCH)
 	)
 elseif (ANDROID)
 	target_link_libraries(pvz-portable PRIVATE GLESv2 EGL android log)
+	set_target_properties(pvz-portable PROPERTIES OUTPUT_NAME "main")
+elseif (OHOS)
+	# The SDK's libc++ 15 keeps std::format behind its experimental features, and the OHOS driver
+	# doesn't link libc++experimental (where format_error lives) for -fexperimental-library itself.
+	target_compile_options(pvz-portable PRIVATE -fexperimental-library)
+	target_link_libraries(pvz-portable PRIVATE GLESv3 EGL ace_napi.z c++experimental)
 	set_target_properties(pvz-portable PROPERTIES OUTPUT_NAME "main")
 elseif (IOS)
 	target_link_libraries(pvz-portable PRIVATE

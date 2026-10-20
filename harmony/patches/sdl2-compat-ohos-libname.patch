@@ -1,0 +1,14 @@
+diff --git a/src/sdl2_compat.c b/src/sdl2_compat.c
+index a6f2eb3..e7cdb36 100644
+--- a/src/sdl2_compat.c
++++ b/src/sdl2_compat.c
+@@ -447,7 +447,8 @@ static char loaderror[256];
+ #elif defined(SDL_PLATFORM_UNIX)
+     #include <dlfcn.h>
+     #include <SDL3/SDL_dlopennote.h>
+-    #ifdef __ANDROID__
++    #if defined(__ANDROID__) || defined(__OHOS__)
++        /* HarmonyOS apps ship unversioned sonames, like Android. */
+         #define SDL3_LIBNAME "libSDL3.so"
+     #else
+         #define SDL3_LIBNAME "libSDL3.so.0"

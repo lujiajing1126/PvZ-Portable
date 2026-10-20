@@ -60,6 +60,7 @@ This project supports the following platforms (including but not limited to):
 | Haiku           | Executable dir (resources); per-user app-data for writable files | Partially works: no music                                                              |
 | Android         | `Android/data/io.github.wszqkzqk.pvzportable/files/` | Works                                                                                  |
 | iOS / iPadOS    | App Documents directory (Files app) | Works (sideload only; unsigned IPA)                                                    |
+| HarmonyOS       | App sandbox (`files/PvZPortable/`) | Experimental (HarmonyOS 5.0.4+; native SDL3 + sdl2-compat)                              |
 | Web (WASM)      | Browser IndexedDB (saves); resources uploaded at runtime    | Works (requires a HTTP server) |
 | Nintendo Switch | sdmc:/switch/PvZPortable | Works on real hardware. Kenji-NX crashes on boot.                           |
 
@@ -119,6 +120,37 @@ The app's Documents folder is exposed via iTunes/Finder file sharing and the iOS
 
 - Requires iOS 16.4+ (arm64).
 - Free Apple ID signatures expire after 7 days; TrollStore installs are permanent.
+- Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
+
+### Special Instructions for HarmonyOS (Experimental)
+
+The HarmonyOS port is a native app (no Android compatibility layer) built from the DevEco Studio project in `harmony/`. It uses upstream SDL3's HarmonyOS backend, with [sdl2-compat](https://github.com/libsdl-org/sdl2-compat) providing the SDL2 API the game is written against. No prebuilt packages are provided yet.
+
+#### Building
+
+1. Install [DevEco Studio](https://developer.huawei.com/consumer/en/download/) (or the HarmonyOS command line tools).
+2. Build the native dependencies (SDL3 and sdl2-compat sources, plus static libpng, libjpeg-turbo and libopenmpt) for each ABI you need:
+   ```bash
+   harmony/build-deps.sh arm64-v8a        # add x86_64 for the emulator
+   ```
+   Set `OHOS_NATIVE_HOME` to `<sdk>/default/openharmony/native` if the SDK isn't found automatically.
+3. Open `harmony/` in DevEco Studio, generate a signature under **File > Project Structure > Signing Configs**, then build and run.
+
+   With the command line tools instead, run this in `harmony/` (without a signing config it produces `entry/build/default/outputs/default/entry-default-unsigned.hap`):
+   ```bash
+   export DEVECO_SDK_HOME=<command-line-tools>/sdk
+   ohpm install --all
+   hvigorw assembleHap --mode module -p product=default -p buildMode=release
+   ```
+
+#### Importing Game Resources
+
+When no resources are found, the app shows a data management screen: select a **ZIP file** containing `main.pak` and `properties/` (at the ZIP root or inside one wrapper directory). Save data can be exported to, or imported from, a ZIP on the same screen. Everything is stored in the app sandbox.
+
+#### Notes
+
+- Requires HarmonyOS 5.0.4 (API 16) or later, the oldest version SDL3 supports.
+- The system back gesture is forwarded to the game as Escape, like on Android.
 - Same touch-to-mouse mapping and aspect ratio behavior as the Android port.
 
 ### Play in Your Browser (WebAssembly)

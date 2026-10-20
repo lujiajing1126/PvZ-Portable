@@ -1,0 +1,22 @@
+{
+  "string": [
+    { "name": "module_desc", "value": "PvZ Portable" },
+    { "name": "EntryAbility_desc", "value": "PvZ Portable" },
+    { "name": "EntryAbility_label", "value": "PvZ Portable" },
+    { "name": "status_ready", "value": "已找到游戏资源，可以开始游戏！" },
+    { "name": "status_missing", "value": "未找到游戏资源。\n请导入 main.pak 和 properties/ 目录后继续。" },
+    { "name": "status_working", "value": "处理中……" },
+    { "name": "section_import_resources", "value": "导入游戏资源" },
+    { "name": "import_help", "value": "请选择一个 ZIP 文件，其中包含合法购买所得的 main.pak 和 properties/ 目录。" },
+    { "name": "btn_pick_zip", "value": "选择 ZIP 文件" },
+    { "name": "section_save_data", "value": "导入/导出存档（可选）" },
+    { "name": "btn_export_save", "value": "导出存档" },
+    { "name": "btn_import_save_zip", "value": "导入存档 ZIP" },
+    { "name": "btn_launch_game", "value": "开始游戏" },
+    { "name": "import_success", "value": "导入成功！" },
+    { "name": "import_failed", "value": "导入失败：" },
+    { "name": "import_no_resources", "value": "ZIP 中没有 main.pak。" },
+    { "name": "export_success", "value": "存档导出成功！" },
+    { "name": "export_failed", "value": "导出失败：" }
+  ]
+}

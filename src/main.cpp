@@ -39,6 +39,10 @@ using namespace Sexy;
 #include <emscripten.h>
 #endif
 
+#ifdef __OHOS__
+#include "OhosBridge.h"
+#endif
+
 #ifdef _WIN32
 static std::vector<std::string> gUtf8ArgsStorage;
 static std::vector<char*> gUtf8Argv;
@@ -82,7 +86,13 @@ static void BuildUtf8ArgsFromWin32(int& argc, char**& argv)
 }
 #endif
 
+#ifdef __OHOS__
+// SDL3's HarmonyOS backend dlopen()s libmain.so and runs the exported SDL_main on its own thread.
+// sdl2-compat's SDL_main.h treats OHOS as Linux and doesn't rename main, so export it here.
+extern "C" __attribute__((visibility("default"))) int SDL_main(int argc, char** argv)
+#else
 int main(int argc, char** argv)
+#endif
 {
 #ifdef __SWITCH__
 	consoleDebugInit(debugDevice_SVC);
@@ -101,6 +111,10 @@ int main(int argc, char** argv)
 #ifndef __EMSCRIPTEN__
 	gLawnApp->Shutdown();
 	delete gLawnApp;
+#endif
+
+#ifdef __OHOS__
+	PvzpOhosTerminateApp();
 #endif
 
 	return 0;
